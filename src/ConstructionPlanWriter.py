@@ -16,12 +16,13 @@ from DataType import DataType
 class ConstructionPlanWriter:
     plan_margin = 50
 
-    def __init__(self, file_path_base, settings):
+    def __init__(self, file_path_base, constructionPlanSet:ConstructionPlanSet, debug_mode):
         self.file_path_base = file_path_base
-        self.settings = settings
-        self.scale_divisor = int(settings['ScaleDivisor'])
+        self.constructionPlanSet = constructionPlanSet
+        self.debug_mode = debug_mode
+        self.scale_divisor = int(constructionPlanSet.settings['ScaleDivisor'])
 
-        match settings['PageSize']:
+        match constructionPlanSet.settings['PageSize']:
             case 'A4':
                 self.pagesize = A4
                 self.pdf_width, self.pdf_height = 21, 29.7
@@ -29,7 +30,7 @@ class ConstructionPlanWriter:
                 self.pagesize = A3
                 self.pdf_width, self.pdf_height = 29.7, 42
             case _:
-                raise ValueError(f'Page size {settings['PageSize']} is not supported')
+                raise ValueError(f'Page size {constructionPlanSet.settings['PageSize']} is not supported')
         
         self.svg_width = ConstructionPlanWriter.cm_to_dots(self.pdf_width)
         self.svg_height = ConstructionPlanWriter.cm_to_dots(self.pdf_height)
@@ -51,27 +52,32 @@ class ConstructionPlanWriter:
         
         c.save()
 
-    def write(self, constructionPlanSet:ConstructionPlanSet):
-        layers = sorted(constructionPlanSet.get_layers())
+    def write(self):
+        cps = self.constructionPlanSet
+
+        layers = sorted(cps.get_layers())
 
         svg_file_paths = []
 
-        constructionPlanSet.meta_information['Massstab'] = f'1 : {self.scale_divisor}'
+        cps.meta_information['Massstab'] = f'1 : {self.scale_divisor}'
         
         for layer in layers:
-            constructionPlanSet.meta_information['Ebene'] = layer
+            cps.meta_information['Ebene'] = layer
 
             svg_content = ''
             svg_content += self.make_header(self.svg_width, self.svg_height)
-            plan_border_content, meta_inforamtion_height = self.make_plan_border(self.svg_width, self.svg_height, self.plan_margin, constructionPlanSet.meta_information)
+            plan_border_content, meta_inforamtion_height = self.make_plan_border(self.svg_width, self.svg_height, self.plan_margin, cps.meta_information)
             svg_content += plan_border_content
 
-            svg_content += self.make_compass(self.svg_width, self.svg_height, self.plan_margin, self.settings['CompassRotation'])
+            svg_content += self.make_compass(self.svg_width, self.svg_height, self.plan_margin, cps.settings['CompassRotation'])
+
+            if self.debug_mode:
+                anchor = np.array([self.plan_margin + 10, self.svg_height - self.plan_margin - meta_inforamtion_height - 10])
+                svg_content += self.make_axes(anchor)
+
 
             body_heigth = self.svg_height - meta_inforamtion_height
-            svg_content += self.make_body(self.svg_width, body_heigth, constructionPlanSet.get_parts_in_layer(layer))
-
-
+            svg_content += self.make_body(self.svg_width, body_heigth, layer)
 
             svg_content += self.make_footer()
 
@@ -91,6 +97,8 @@ class ConstructionPlanWriter:
         header_content += self.make_style('plan-boarder', 'fill: none', 'stroke: black', 'stroke-width: 2px')
         header_content += self.make_style('meta-information-key', 'font-size: 10pt', 'font-family: monospace', 'text-anchor: start')
         header_content += self.make_style('meta-information-text', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold', 'text-anchor: middle')
+        header_content += self.make_style('debug-text', 'fill: #ac9d00', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold')
+        header_content += self.make_style('debug-line', 'fill: none', 'stroke: #ac9d00', 'stroke-width: 0.5px')
         header_content += self.make_style('dim-text', 'fill: #a10000', 'font-size: 3mm', 'font-family: monospace', 'font-weight: bold', 'text-anchor: middle')
         header_content += self.make_style('dim-line', 'fill: none', 'stroke: black', 'stroke-width: 0.5px')
         header_content += self.make_style('outline', 'fill: #2b2b2b', 'stroke: black', 'stroke-width: 1px')
@@ -127,6 +135,17 @@ class ConstructionPlanWriter:
 
         return plan_border_content, info_box_height * (int(counter/2) + 1)
 
+    def make_axes(self, anchor:np.ndarray):
+        anchor1 = anchor + np.array([0, -50])
+        anchor2 = anchor
+        anchor3 = anchor + np.array([50, 0])
+        axes_content = ''
+        axes_content += f'<path class="debug-line" d="M{anchor1[0]} {anchor1[1]} L{anchor2[0]} {anchor2[1]} L{anchor3[0]} {anchor3[1]}" />\n'
+        axes_content += f'<text class="debug-text" text-anchor="end" x="{anchor3[0]}" y="{anchor3[1] - 5}">x</text>\n'
+        axes_content += f'<text class="debug-text" x="{anchor1[0] + 5}" y="{anchor1[1] + 5}">y</text>'
+
+        return axes_content
+
     def make_compass(self, svg_width, svg_height, margin, compass_rotation):
         
         compass_content = ''
@@ -144,7 +163,6 @@ class ConstructionPlanWriter:
 
         return compass_content
 
-
     def make_footer(self):
         return '</svg>'
 
@@ -157,6 +175,7 @@ class ConstructionPlanWriter:
 
         style_content += '}\n'
         return style_content
+
 
     def get_style_class(self, dataType:DataType):
         match dataType:
@@ -174,7 +193,29 @@ class ConstructionPlanWriter:
                 raise InputError(f'No style class implemented for Part with type {dataType}')
 
 
-    def make_body(self, body_width, body_heigth, part_list:List[Part]):
+    def make_debug_information(self, layer:str, canvas_left_limit, canvas_right_limit):
+        part_list = self.constructionPlanSet.get_parts_in_layer(layer)
+
+        debug_content = ''
+
+        counter = 0
+        for part in sorted(part_list, key=lambda n: n.dataType.value):
+            match part.dataType:
+                case DataType.Outline | DataType.Room | DataType.RoomConnection | DataType.OpeningArc:
+                    ref_id_text_pos = np.array([canvas_right_limit, -counter*15])
+                    shape = DebugReferenceInformationShape(self.scale_divisor, part, ref_id_text_pos)
+                    
+                    debug_content += f'{shape.get_svg_string('debug')}\n'
+
+                    counter += 1
+        
+        debug_content += f'path class\n'
+
+        return debug_content
+
+    def make_body(self, body_width, body_heigth, layer):
+        part_list = self.constructionPlanSet.get_parts_in_layer(layer)
+        
         body_content = ''
         shapes = list()
 
@@ -217,6 +258,10 @@ class ConstructionPlanWriter:
         for shape in shapes:
             body_content += f'{shape}\n'
         
+        if self.debug_mode:
+            body_content += self.make_debug_information(layer, -x_offset, body_width-x_offset)
+
+
         body_content += '</g>\n'
 
         return body_content
@@ -226,7 +271,7 @@ class Shape(ABC):
         self.scale_divisor = scale_divisor
 
     @abstractmethod
-    def get_svg_string(self, scale_divisor):
+    def get_svg_string(self, class_str):
         pass
 
     @abstractmethod
@@ -258,7 +303,39 @@ class RectangleShape(Shape):
 
     def get_boundry(self):
         return self.x, self.x + self.scaled_width, self.y, self.y + self.scaled_height
-    
+
+class DebugReferenceInformationShape(Shape):
+    _svg_content = ''
+
+    def __init__(self, scale_divisor, part:Part, ref_id_text_pos:np.ndarray):
+        super().__init__(scale_divisor)
+        self.part = part
+        self.ref_id_text_pos = ref_id_text_pos
+
+        points = part.points
+        reference = part.reference
+        
+        referenced_points = list(map(lambda n: np.add(n,reference), points))
+        mirrored_points = list(map(lambda n: self.invert_y(n), referenced_points))
+        self.points_transformed = list(map(lambda n: self.cm_to_dots(n)/self.scale_divisor, mirrored_points))
+
+    def get_svg_string(self, class_str):
+        ref_id_line_pt1 = self.ref_id_text_pos + np.array([-70,-5])
+        ref_id_line_pt2 = self.points_transformed[0]
+        self._svg_content += f'<line class="{class_str}-line" x1="{ref_id_line_pt1[0]}" y1="{ref_id_line_pt1[1]}" x2="{ref_id_line_pt2[0]}" y2="{ref_id_line_pt2[1]}"/>\n'
+
+        for i in range(0,len(self.points_transformed)):
+            point = self.points_transformed[i]
+            self._svg_content += f'<text class="{class_str}-text" text-anchor="middle" x="{point[0]}" y="{point[1]+5}">{i}</text>\n'
+
+        self._svg_content += f'<text class="{class_str}-text" text-anchor="end" x="{self.ref_id_text_pos[0]}" y="{self.ref_id_text_pos[1]}">{self.part.identifier}</text>'
+
+        return self._svg_content
+
+    def get_boundry(self):
+        raise NotImplementedException(self.get_boundry.__name__, DebugReferenceInformationShape.__name__)
+
+
 class DimShape(Shape):
     def __init__(self, scale_divisor, dimType:DataType, pt1, pt2, dim_offset:float, reference = None):
         super().__init__(scale_divisor)
@@ -314,8 +391,6 @@ class DimShape(Shape):
                 self.text_rotation = -90
             case _:
                 raise Exception(f'{DimShape.__name__} cant handle {DataType.__name__} other then {DataType.XDim} oder {DataType.YDim}')
-                
-
 
     def get_svg_string(self, class_str):
         dim_line_center = (self.dim_line_anchor1 + self.dim_line_anchor2)/2
