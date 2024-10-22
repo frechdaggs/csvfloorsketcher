@@ -6,6 +6,7 @@ from ConsolePrinter import print_info
 from Exceptions.InputError import InputError
 from Part import Part
 from DataType import DataType
+from PartLabel import PartLabel
 
 class ConstructionPlanSet:
 
@@ -53,9 +54,19 @@ class ConstructionPlanSet:
             self.meta_information[identifier] = payload[0]
         elif (dataType == DataType.Settings):
             self.settings[identifier] = payload[0]
+        elif (dataType == DataType.Label):
+            self.check_payload_length(payload, 1)
+            text1 = payload[0]
+            text2 = '' if len(payload) <= 1 else payload[1]
+            self.part_list.append(PartLabel(identifier, dataType, layer, reference, text1, text2))
         else:
             points = list(map(lambda n: self.parse_and_calculate_point(n, layer),payload))
             self.part_list.append(Part(identifier, dataType, layer, dimOffset, reference, points))
+
+    def check_payload_length(self, payload, min_length):
+        if len(payload) < min_length:
+            raise InputError(f'Payload must have at least {min_length} entr(y/ies)')
+
 
     def get_part(self, identifier, layer):
         parts = list(filter(lambda n: n.identifier == identifier and n.layer == layer, self.part_list))
@@ -81,7 +92,7 @@ class ConstructionPlanSet:
 
         return point[0]+part.reference[0], point[1]+part.reference[1]
 
-    def get_parts_in_layer(self, layer):
+    def get_parts_in_layer(self, layer) -> List[Part]:
         return list(filter(lambda n: n.layer == layer, self.part_list))
     
     def get_layers(self):

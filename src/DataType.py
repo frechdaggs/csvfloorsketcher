@@ -8,6 +8,7 @@ class DataType(Enum):
     Room = 4
     OpeningArc = 5
     RoomConnection = 6
-    XDim = 7
-    YDim = 8
+    Label = 7
+    XDim = 8
+    YDim = 9
 

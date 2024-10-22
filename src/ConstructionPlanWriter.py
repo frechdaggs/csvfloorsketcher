@@ -4,13 +4,14 @@ from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, A3
 from svglib.svglib import svg2rlg
-from typing import List
+from typing import List, cast
 import numpy as np
 from ConstructionPlanSet import ConstructionPlanSet
 from Exceptions.InputError import InputError
 from Exceptions.NotImplementedException import NotImplementedException
 from Part import Part
 from DataType import DataType
+from PartLabel import PartLabel
 
 
 class ConstructionPlanWriter:
@@ -97,6 +98,7 @@ class ConstructionPlanWriter:
         header_content += self.make_style('plan-boarder', 'fill: none', 'stroke: black', 'stroke-width: 2px')
         header_content += self.make_style('meta-information-key', 'font-size: 10pt', 'font-family: monospace', 'text-anchor: start')
         header_content += self.make_style('meta-information-text', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold', 'text-anchor: middle')
+        header_content += self.make_style('label-text', 'fill: black', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold')
         header_content += self.make_style('debug-text', 'fill: #ac9d00', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold')
         header_content += self.make_style('debug-line', 'fill: none', 'stroke: #ac9d00', 'stroke-width: 0.5px')
         header_content += self.make_style('dim-text', 'fill: #a10000', 'font-size: 3mm', 'font-family: monospace', 'font-weight: bold', 'text-anchor: middle')
@@ -189,6 +191,8 @@ class ConstructionPlanWriter:
                 return 'opening-arc'
             case DataType.XDim|DataType.YDim:
                 return 'dim'
+            case DataType.Label:
+                return 'label-text'
             case _:
                 raise InputError(f'No style class implemented for Part with type {dataType}')
 
@@ -240,12 +244,16 @@ class ConstructionPlanWriter:
                 case DataType.OpeningArc:
                     shape = OpeningArgShape(self.scale_divisor, part.points, part.reference)
                     shapes.append(shape.get_svg_string(self.get_style_class(part.dataType)))
-                
+                    
                 case DataType.XDim | DataType.YDim:
                     pt1 = part.points[0]
                     pt2 = part.points[1]
 
                     shapes.append(DimShape(self.scale_divisor, part.dataType, pt1, pt2, part.dimOffset, part.reference).get_svg_string(self.get_style_class(part.dataType)))
+
+                case DataType.Label:
+                    part_label = cast(PartLabel, part)
+                    shapes.append(Label(self.scale_divisor, part_label).get_svg_string(self.get_style_class(part.dataType)))
 
                 case _:
                     raise InputError(f'Part with type {part.dataType} not implemented in {ConstructionPlanWriter.__name__}')
@@ -272,17 +280,32 @@ class Shape(ABC):
 
     @abstractmethod
     def get_svg_string(self, class_str):
-        pass
+        raise NotImplementedException(self.get_boundry.__name__, type(self).__name__)
 
     @abstractmethod
     def get_boundry(self):
-        pass
+        raise NotImplementedException(self.get_boundry.__name__, type(self).__name__)
 
     def cm_to_dots(self, value):
         return ConstructionPlanWriter.cm_to_dots(value)
     
     def invert_y(self, point:np.ndarray):
         return np.matmul(point, np.array([[1, 0], [0, -1]]))
+
+class Label(Shape):
+    def __init__(self, scale_divisor, part_label:PartLabel):
+        super().__init__(scale_divisor)
+
+        self.text_anchor = self.cm_to_dots(self.invert_y(part_label.reference))/self.scale_divisor
+        self.text = f'{part_label.text1}'
+        if part_label.text2 != '':
+            self.text += f' ({part_label.text2})'
+
+    def get_svg_string(self, class_str):
+        return f'<text class="{class_str}" x="{self.text_anchor[0]}" y="{self.text_anchor[1]}">{self.text}</text>'
+
+    def get_boundry(self):
+        return super().get_boundry()
 
 class RectangleShape(Shape):
     def __init__(self, scale_divisor, width, height, center):
@@ -331,9 +354,9 @@ class DebugReferenceInformationShape(Shape):
         self._svg_content += f'<text class="{class_str}-text" text-anchor="end" x="{self.ref_id_text_pos[0]}" y="{self.ref_id_text_pos[1]}">{self.part.identifier}</text>'
 
         return self._svg_content
-
+    
     def get_boundry(self):
-        raise NotImplementedException(self.get_boundry.__name__, DebugReferenceInformationShape.__name__)
+        return super().get_boundry()
 
 
 class DimShape(Shape):
@@ -416,7 +439,7 @@ class DimShape(Shape):
         return svg_string
 
     def get_boundry(self):
-        raise NotImplementedException(self.get_boundry.__name__, DimShape.__name__)
+        return super().get_boundry()
 
 class PathShape(Shape):
     def __init__(self, scale_divisor, points, reference):
@@ -476,5 +499,4 @@ class OpeningArgShape(Shape):
         return svg_string
 
     def get_boundry(self):
-        raise NotImplementedException(self.get_boundry.__name__, OpeningArgShape.__name__)
-    
+        return super().get_boundry()    

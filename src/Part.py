@@ -10,7 +10,7 @@ class Part:
         self.layer = layer
         
         try:
-            self.dimOffset:float = 0 if dimOffset=='' else float(dimOffset)
+            self.dimOffset:float = 0 if dimOffset=='' or dimOffset==None else float(dimOffset)
         except ValueError:
             raise InputError(f'Value with key "Dim-Offset" must be a floating number.')
         

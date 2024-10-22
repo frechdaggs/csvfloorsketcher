@@ -1,7 +1,5 @@
 ### Backlog
 
-#### Beschriftung der Räume
-Es soll möglich sein, die Räume mit Namen zu versehen.
 
 
 #### Treppenläufe
@@ -30,6 +28,9 @@ Für Bemaßungen die nicht die gleichen x- bzw. y-Werte haben liegt die Bemaßun
 
 #### #0003: Leerzeilen in der CSV
 Zu besseren Strukturierung soll es möglich sein, dass in der csv-Datei Leerzeilen enthalten sind.
+
+#### #0004: Beschriftung der Räume
+Es soll möglich sein, die Räume mit Namen zu versehen.
 
 ### Release: v00.001.00
 
