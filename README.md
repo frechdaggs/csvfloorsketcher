@@ -1,47 +1,68 @@
 # CSV Floor Sketcher
-## Installation
 
+## Verwendung
+### Verwendung als Python-Skript
 1. Erstelle eine virtuelle Umgebung:
-    ```bash
+    ```
     python -m venv venv
     ```
 
 2. Aktiviere die virtuelle Umgebung:
-
     - **Windows**: `venv\Scripts\activate`
     - **Mac/Linux**: `source venv/bin/activate`
 
 3. Installiere die Abhängigkeiten:
-
-    ```bash
+    ```
     pip install -r requirements.txt
     ```
 
-## Speichern von Abhängigkeiten:
-    
-	```bash
-    pip freeze > requirements.txt
+4. Skript ausführen
     ```
-
-## Verwendung
-
-    ```bash
     python CSVFloorSketcher.py <PATH TO DATA.csv>
     ```
 
-    ```bash
+### Verwendung als Standalone
+* "Normaler" Aufruf mittels cmd
+    ```
     CSVFloorSketcher_v<VERSION>.exe <PATH TO DATA.csv>
     ```
 
-## Release
+* Aufruf der Hilfe-Option mittels cmd 
+    ```
+    CSVFloorSketcher_v<VERSION>.exe -h
+    ```
 
-    ```bash
-    pyinstaller build.spec
+## Mitarbeit
+
+### Virtuelle Umgebung erzeugen
+1. cmd auf Projekt-Verzeichnis
+2. Virtuelle Umgebung erzeugen
+   ```
+   python -m venv venv
+   ```
+3. Abhängigkeiten installieren:
+    ```
+    pip install -r requirements.txt
     ```
 
 
-## FAQ
+
+### Speichern von Abhängigkeiten
+```
+pip freeze > requirements.txt
+```	
+    
+
+### Release erzeugen
+```
+pyinstaller build.spec
+```
+
+
+
+
+# FAQ
 * pip SSLCertVerificationError
-	```bash
+	```
 	pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org <package_name>
 	```
