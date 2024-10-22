@@ -43,7 +43,12 @@ class ConstructionPlanSet:
         layer: str = date['Layer']
         dimOffset: str = date['DimOffset']
         reference_expression: str = date['Reference']
-        dataType: DataType = DataType[date['Type']]
+
+        try:
+            dataType: DataType = DataType[date['Type']]
+        except KeyError:
+            raise InputError(f'Unknown Type: {date['Type']}')
+
         payload = date['Payload']
         
         reference:np.ndarray = None

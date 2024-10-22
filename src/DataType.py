@@ -6,9 +6,11 @@ class DataType(Enum):
     MetaInformation = 2
     Outline = 3
     Room = 4
-    OpeningArc = 5
-    RoomConnection = 6
-    Label = 7
-    XDim = 8
-    YDim = 9
+    Stairs = 5
+    Steps = 6
+    OpeningArc = 7
+    RoomConnection = 8
+    Label = 9
+    XDim = 10
+    YDim = 11
 

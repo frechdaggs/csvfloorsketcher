@@ -2,8 +2,6 @@
 
 
 
-#### Treppenläufe
-Es soll möglich sein, einen Treppenlauf im Plan einzeichnen zu können.
 
 #### Dachschrägen
 Es soll möglich sein, einen Dachschrägen im Plan einzeichnen zu können.
@@ -31,6 +29,9 @@ Zu besseren Strukturierung soll es möglich sein, dass in der csv-Datei Leerzeil
 
 #### #0004: Beschriftung der Räume
 Es soll möglich sein, die Räume mit Namen zu versehen.
+
+#### #0005: Treppenläufe
+Es soll möglich sein, einen Treppenlauf im Plan einzeichnen zu können.
 
 ### Release: v00.001.00
 

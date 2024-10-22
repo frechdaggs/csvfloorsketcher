@@ -12,6 +12,7 @@ from Exceptions.NotImplementedException import NotImplementedException
 from Part import Part
 from DataType import DataType
 from PartLabel import PartLabel
+import SVGHelper
 
 
 class ConstructionPlanWriter:
@@ -105,6 +106,8 @@ class ConstructionPlanWriter:
         header_content += self.make_style('dim-line', 'fill: none', 'stroke: black', 'stroke-width: 0.5px')
         header_content += self.make_style('outline', 'fill: #2b2b2b', 'stroke: black', 'stroke-width: 1px')
         header_content += self.make_style('room', 'fill: #d9d9d9', 'stroke: black', 'stroke-width: 1px')
+        header_content += self.make_style('stairs', 'fill: #b3b3b3', 'stroke: black', 'stroke-width: 1px')
+        header_content += self.make_style('steps', 'fill: none', 'stroke: black', 'stroke-width: 1px')
         header_content += self.make_style('room-connection', 'fill: #797979', 'stroke: black', 'stroke-width: 1px')
         header_content += self.make_style('opening-arc', 'fill: #b3b3b3', 'stroke: black', 'stroke-width: 0.5px')
         header_content += '</style>\n'
@@ -185,6 +188,10 @@ class ConstructionPlanWriter:
                 return 'outline'
             case DataType.Room:
                 return 'room'
+            case DataType.Stairs:
+                return 'stairs'
+            case DataType.Steps:
+                return 'steps'
             case DataType.RoomConnection:
                 return 'room-connection'
             case DataType.OpeningArc:
@@ -230,7 +237,7 @@ class ConstructionPlanWriter:
 
         for part in sorted(part_list, key=lambda n: n.dataType.value):
             match part.dataType:
-                case DataType.Outline | DataType.Room | DataType.RoomConnection:
+                case DataType.Outline | DataType.Room | DataType.Stairs | DataType.RoomConnection:
                     shape = PathShape(self.scale_divisor, part.points, part.reference)
 
                     x_min_shape, x_max_shape, y_min_shape, y_max_shape = shape.get_boundry()
@@ -238,6 +245,11 @@ class ConstructionPlanWriter:
                     if (x_max_shape > x_max): x_max = x_max_shape
                     if (y_min_shape < y_min): y_min = y_min_shape
                     if (y_max_shape > y_max): y_max = y_max_shape
+
+                    shapes.append(shape.get_svg_string(self.get_style_class(part.dataType)))
+
+                case DataType.Steps:
+                    shape = StepsShape(self.scale_divisor, part.points, part.reference)
 
                     shapes.append(shape.get_svg_string(self.get_style_class(part.dataType)))
 
@@ -470,6 +482,39 @@ class PathShape(Shape):
 
         return min(xs), max(xs), min(ys), max(ys)
     
+class StepsShape(Shape):
+    def __init__(self, scale_divisor, points, reference):
+        super().__init__(scale_divisor)
+        self.points_transformed = list(map(lambda n: self.transform_point(n, reference, scale_divisor), points))
+
+    def transform_point(self, point:np.ndarray, reference:np.ndarray, scale_divisor):
+        point_transformed = np.add(point,reference)
+        point_transformed = self.invert_y(point_transformed)
+        point_transformed = self.cm_to_dots(point_transformed)/scale_divisor
+        return point_transformed
+
+    def get_svg_string(self, class_str):
+        step_centroids = list()
+        svg_string = ''
+        for i in range(0, int(len(self.points_transformed)/2)):
+            if i > 0:
+                svg_string += '\n'
+
+            step_point1 = self.points_transformed[i]
+            step_point2 = self.points_transformed[len(self.points_transformed)-i-1]
+
+            step_centroids.append((step_point1+step_point2)/2)
+
+            svg_string += SVGHelper.gen_line_string(step_point1, step_point2, class_str)
+
+        svg_string += SVGHelper.gen_path_string(step_centroids, False, class_str)
+
+        return svg_string 
+
+    def get_boundry(self):
+        return super().get_boundry()
+
+
 class OpeningArgShape(Shape):
     def __init__(self, scale_divisor, points, reference):
         super().__init__(scale_divisor)
