@@ -40,11 +40,13 @@ def main():
     parser = argparse.ArgumentParser(description="Erzeugt einen Bauplan auf Basis einer Bemaßungstabelle.")
     parser.add_argument('daten', type=str, help='Pfad der Bemaßungstabelle')
     parser.add_argument('--debug', action="store_true", help='Erweitert die Zeichnung um Informationen, die die Arbeit mit der Zeichnung erleichtern.')
+    parser.add_argument('--svg', action="store_true", help='Erzeugt zusätzlich die rohen svg-Dateien.')
     
     args = parser.parse_args()
     csv_file = args.daten
     debug_mode = args.debug
-
+    is_savig_svg = args.svg
+    
     file_path_without_ext, ext = os.path.splitext(csv_file)
 
     data = read_data(csv_file)
@@ -57,7 +59,7 @@ def main():
         constructionPlanSet.add_data(date)
 
     constructionPlanWriter = ConstructionPlanWriter(file_path_without_ext, constructionPlanSet, debug_mode)
-    constructionPlanWriter.write()
+    constructionPlanWriter.write(is_savig_svg)
 
 
 if __name__ == '__main__':

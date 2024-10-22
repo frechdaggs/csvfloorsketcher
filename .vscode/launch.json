@@ -32,5 +32,17 @@
                 "--debug"
             ]
         },
+        {
+            "name": "#0006 with svg",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/CSVFloorSketcher.py",
+            "console": "integratedTerminal",
+            "args": [
+                "test/TestData_#0006.csv",
+                "--debug",
+                "--svg"
+            ]
+        },
     ]
 }

@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+from io import BytesIO
 import math
 from reportlab.graphics import renderPDF
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, A3
 from svglib.svglib import svg2rlg
-from typing import List, cast
+from typing import Dict, List, cast
 import numpy as np
 from ConstructionPlanSet import ConstructionPlanSet
 from Exceptions.InputError import InputError
@@ -44,53 +45,60 @@ class ConstructionPlanWriter:
 
         return value*dpi/cm_per_inch
 
-    def convertToPDF(self, svg_file_paths, pdf_file_path):
-        c = canvas.Canvas(pdf_file_path, pagesize=self.pagesize)
-
-        for svg_file_path in svg_file_paths:
-            drawing = svg2rlg(svg_file_path)
-            renderPDF.draw(drawing, c, 0, 0)
-            c.showPage()
-        
-        c.save()
-
-    def write(self):
+    def write(self, is_savig_svg:bool):
         cps = self.constructionPlanSet
 
         layers = sorted(cps.get_layers())
 
-        svg_file_paths = []
-
         cps.meta_information['Massstab'] = f'1 : {self.scale_divisor}'
         
+        pdf_buffer = BytesIO()
+        pdf_canvas = canvas.Canvas(pdf_buffer, pagesize=self.pagesize)
         for layer in layers:
             cps.meta_information['Ebene'] = layer
 
-            svg_content = ''
-            svg_content += self.make_header(self.svg_width, self.svg_height)
-            plan_border_content, meta_inforamtion_height = self.make_plan_border(self.svg_width, self.svg_height, self.plan_margin, cps.meta_information)
-            svg_content += plan_border_content
+            svg_content = self.make_svg_content(cps, layer)
+            
+            svg_buffer = BytesIO(svg_content.encode('utf-8'))
+            
+            drawing = svg2rlg(svg_buffer)
+            renderPDF.draw(drawing, pdf_canvas, 0, 0)
+            pdf_canvas.showPage()
 
-            svg_content += self.make_compass(self.svg_width, self.svg_height, self.plan_margin, cps.settings['CompassRotation'])
+            if is_savig_svg:
+                self.save_svg(layer, svg_buffer)            
 
-            if self.debug_mode:
-                anchor = np.array([self.plan_margin + 10, self.svg_height - self.plan_margin - meta_inforamtion_height - 10])
-                svg_content += self.make_axes(anchor)
-
-
-            body_heigth = self.svg_height - meta_inforamtion_height
-            svg_content += self.make_body(self.svg_width, body_heigth, layer)
-
-            svg_content += self.make_footer()
-
-            svg_file_path = f'{self.file_path_base}_{layer}.svg'
-            svg_file_paths.append(svg_file_path)
-
-            with open(svg_file_path, 'w') as file:
-                file.write(svg_content)
-
+        pdf_canvas.save()
+        
         pdf_file_path = f'{self.file_path_base}.pdf'
-        self.convertToPDF(svg_file_paths, pdf_file_path)
+        pdf_buffer.seek(0)
+        with open(pdf_file_path, 'wb') as f:
+            f.write(pdf_buffer.read())
+
+    def save_svg(self, layer, svg_buffer):
+        svg_file_path = f'{self.file_path_base}_{layer}.svg'
+        svg_buffer.seek(0)
+            
+        with open(svg_file_path, 'wb') as svg_file:
+            svg_file.write(svg_buffer.read())
+
+    def make_svg_content(self, cps, layer):
+        svg_content = ''
+        svg_content += self.make_header(self.svg_width, self.svg_height)
+        plan_border_content, meta_inforamtion_height = self.make_plan_border(self.svg_width, self.svg_height, self.plan_margin, cps.meta_information)
+        svg_content += plan_border_content
+
+        svg_content += self.make_compass(self.svg_width, self.svg_height, self.plan_margin, cps.settings['CompassRotation'])
+
+        if self.debug_mode:
+            anchor = np.array([self.plan_margin + 10, self.svg_height - self.plan_margin - meta_inforamtion_height - 10])
+            svg_content += self.make_axes(anchor)
+
+        body_heigth = self.svg_height - meta_inforamtion_height
+        svg_content += self.make_body(self.svg_width, body_heigth, layer)
+
+        svg_content += self.make_footer()
+        return svg_content
 
     def make_header(self, svg_width, svg_height):
         header_content = ''
