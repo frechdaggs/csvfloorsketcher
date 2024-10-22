@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "#  0000",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/ConstructionPlanCreator.py",
+            "console": "integratedTerminal",
+            "args": [
+                "test/TestData_#0000.csv"
+            ]
+        },
+        {
+            "name": "#0001",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/ConstructionPlanCreator.py",
+            "console": "integratedTerminal",
+            "args": [
+                "test/TestData_#0001.csv"
+            ]
+        },
+    ]
+}

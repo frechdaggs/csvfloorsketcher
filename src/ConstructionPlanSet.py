@@ -41,9 +41,13 @@ class ConstructionPlanSet:
         identifier: str = date['Identifier']
         layer: str = date['Layer']
         dimOffset: str = date['DimOffset']
-        reference: str = date['Reference']
+        reference_expression: str = date['Reference']
         dataType: DataType = DataType[date['Type']]
         payload = date['Payload']
+        
+        reference:np.ndarray = None
+        if reference_expression != '':
+            reference = self.parse_and_calculate_point(reference_expression, layer)
 
         if (dataType == DataType.MetaInformation):
             self.meta_information[identifier] = payload[0]
@@ -51,7 +55,7 @@ class ConstructionPlanSet:
             self.settings[identifier] = payload[0]
         else:
             points = list(map(lambda n: self.parse_and_calculate_point(n, layer),payload))
-            self.part_list.append(Part(identifier, dataType, layer, dimOffset, self.parse_and_calculate_point(reference, layer), points))
+            self.part_list.append(Part(identifier, dataType, layer, dimOffset, reference, points))
 
     def get_part(self, identifier, layer):
         parts = list(filter(lambda n: n.identifier == identifier and n.layer == layer, self.part_list))

@@ -12,10 +12,10 @@ Es soll möglich sein, die Räume mit Namen zu versehen.
 Zu besseren Strukturierung soll es möglich sein, dass in der csv-Datei Leerzeilen enthalten sind.
 
 #### Treppenläufe
-Es soll möglich sein, Treppenläufe im Plan einzeichnen zu können.
+Es soll möglich sein, einen Treppenlauf im Plan einzeichnen zu können.
 
 #### Dachschrägen
-Es soll möglich sein, Dachschrägen im Plan einzeichnen zu können.
+Es soll möglich sein, einen Dachschrägen im Plan einzeichnen zu können.
 
 #### Höhenprofil
 Die Beschriftung des Plan soll um Höhen-Angaben erweiterbar sein. Eine Höhen-Angabe besteht aus einer unteren und oberen Höhe und ist Raum- bzw. Partspezifisch angebbar
@@ -24,7 +24,8 @@ Die Beschriftung des Plan soll um Höhen-Angaben erweiterbar sein. Eine Höhen-A
 
 
 ### Next: v00.001.01
-
+#### #0001: Bemaßungen müssen einheitliche Referenz haben
+Für Bemaßungen die nicht die gleichen x- bzw. y-Werte haben liegt die Bemaßungszahl auf der Diagonale. Darüberhinaus können Bemaßungen mit Offset nicht an einander ausgerichtet werden. Hierfür ist wäre Referenzpunkt notwendig. Ist dieser nicht vorgegeben muss einer der beiden Beaßungspunkte als Referenzpunktherangezogen werden.
 
 
 ### Release: v00.001.00

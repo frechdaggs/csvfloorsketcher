@@ -1,0 +1,26 @@
+"Identifier","Layer","Type",Dim-Offset,Reference,,,,,,
+"PageSize",,"Settings",,,A4,,,,,
+"ScaleDivisor",,"Settings",,,50,,,,,
+"CompassRotation",,"Settings",,,45,,,,,
+"Objekt",,"MetaInformation",,,Musterstr. 666,,,,,
+"Version",,"MetaInformation",,,v00.00,,,,,
+"Haus","#0001","Outline",,"(0,0)","(0,0)","(730,0)","(730,1020)","(430,1020)","(430,870)","(0,870)"
+"EZ","#0001","Room",,"(25,422)","(0,0)","(464,0)","(464,100)","(404,100)","(404,428)","(0,428)"
+"Kuche","#0001","Room",,"(EZ-5)+(12,0)","(0,0)","(0,-256)","(60,-256)","(60,-296)","(280,-296)","(280,0)",,,
+"Dim1","#0001","YDim",,,"(Kuche-1)","(Kuche-4)"
+"Dim1","#0001","XDim",,,"(Kuche-2)","(Kuche-5)"
+"Dim1","#0001","YDim",,,"(EZ-2)","(EZ-5)"
+"Dim1","#0001","XDim",,,"(EZ-6)","(EZ-3)"
+"Dim1","#0001","XDim",,"(EZ-6)","(EZ-3)","(EZ-6)"
+"Dim1","#0001","XDim",20,"(EZ-1)","(EZ-3)","(EZ-4)"
+"Dim1","#0001","XDim",20,"(EZ-1)","(EZ-5)","(EZ-6)"
+"Dim1","#0001","XDim",40,"(EZ-1)","(EZ-3)","(EZ-6)"
+"Dim1","#0001","XDim",20,"(Kuche-1)","(Kuche-2)","(Kuche-3)"
+"Dim1","#0001","XDim",20,"(Kuche-1)","(Kuche-4)","(Kuche-5)"
+"Dim1","#0001","XDim",40,"(Kuche-1)","(Kuche-2)","(Kuche-5)"
+"Dim1","#0001","YDim",20,"(EZ-1)","(EZ-2)","(EZ-3)"
+"Dim1","#0001","YDim",20,"(EZ-1)","(EZ-4)","(EZ-5)"
+"Dim1","#0001","YDim",40,"(EZ-1)","(EZ-2)","(EZ-5)"
+"Dim1","#0001","YDim",20,"(Kuche-5)","(Kuche-3)","(Kuche-4)"
+"Dim1","#0001","YDim",20,"(Kuche-5)","(Kuche-1)","(Kuche-2)"
+"Dim1","#0001","YDim",40,"(Kuche-5)","(Kuche-1)","(Kuche-4)"

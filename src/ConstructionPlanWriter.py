@@ -204,7 +204,7 @@ class ConstructionPlanWriter:
                     pt1 = part.points[0]
                     pt2 = part.points[1]
 
-                    shapes.append(DimShape(self.scale_divisor, part.dataType, pt1, pt2, part.dimOffset).get_svg_string(self.get_style_class(part.dataType)))
+                    shapes.append(DimShape(self.scale_divisor, part.dataType, pt1, pt2, part.dimOffset, part.reference).get_svg_string(self.get_style_class(part.dataType)))
 
                 case _:
                     raise InputError(f'Part with type {part.dataType} not implemented in {ConstructionPlanWriter.__name__}')
@@ -260,69 +260,79 @@ class RectangleShape(Shape):
         return self.x, self.x + self.scaled_width, self.y, self.y + self.scaled_height
     
 class DimShape(Shape):
-    def __init__(self, scale_divisor, dimType:DataType, pt1, pt2, dim_offset:float):
+    def __init__(self, scale_divisor, dimType:DataType, pt1, pt2, dim_offset:float, reference = None):
         super().__init__(scale_divisor)
         
         if (not (dimType == DataType.XDim or dimType == DataType.YDim)):
             raise Exception(f'{DimShape.__name__} cant handle {DataType.__name__} other then {DataType.XDim} oder {DataType.YDim}')
 
-        self.dimOffset = dim_offset
+        self.dim_offset = dim_offset
         self.pt1_transformed = self.cm_to_dots(self.invert_y(pt1))/self.scale_divisor
         self.pt2_transformed = self.cm_to_dots(self.invert_y(pt2))/self.scale_divisor
 
+        if reference is None:
+            reference = pt1
+        
+        reference_transformed = self.cm_to_dots(self.invert_y(reference))/self.scale_divisor
+        
         match dimType:
             case DataType.XDim:
-                self.delta = abs(pt2[0]-pt1[0])
-                self.center = self.cm_to_dots(self.invert_y((pt1+pt2)/2))/self.scale_divisor
-
+                self.dimension_text = abs(pt2[0]-pt1[0])
+                                    
+                self.dim_line_anchor1 = np.array([self.pt1_transformed[0], reference_transformed[1]])
+                self.dim_line_anchor2 = np.array([self.pt2_transformed[0], reference_transformed[1]])
+                
                 if pt2[0]>pt1[0]:
-                    self.text_offset_y = -2 - dim_offset
-                    self.pt1_transformed_with_dim_offset = self.pt1_transformed - np.array([0, dim_offset])
-                    self.pt2_transformed_with_dim_offset = self.pt2_transformed - np.array([0, dim_offset])
+                    self.text_offset_y = -2
+                    self.dim_line_anchor1 = self.dim_line_anchor1 - np.array([0, dim_offset])
+                    self.dim_line_anchor2 = self.dim_line_anchor2 - np.array([0, dim_offset])
                 else:
-                    self.text_offset_y = 9 + dim_offset
-                    self.pt1_transformed_with_dim_offset = self.pt1_transformed + np.array([0, dim_offset])
-                    self.pt2_transformed_with_dim_offset = self.pt2_transformed + np.array([0, dim_offset])
+                    self.text_offset_y = 9
+                    self.dim_line_anchor1 = self.dim_line_anchor1 + np.array([0, dim_offset])
+                    self.dim_line_anchor2 = self.dim_line_anchor2 + np.array([0, dim_offset])
                 
                 self.text_offset_x = 0
                 self.text_rotation = 0
 
             case DataType.YDim:
-                self.delta = abs(pt2[1]-pt1[1])
-                self.center = self.cm_to_dots(self.invert_y((pt1+pt2)/2))/self.scale_divisor
+                self.dimension_text = abs(pt2[1]-pt1[1])
+                    
+                self.dim_line_anchor1 = np.array([reference_transformed[0], self.pt1_transformed[1]])
+                self.dim_line_anchor2 = np.array([reference_transformed[0], self.pt2_transformed[1]])
 
                 if pt2[1]>pt1[1]:
-                    self.text_offset_x = -2 - dim_offset
-                    self.pt1_transformed_with_dim_offset = self.pt1_transformed - np.array([dim_offset, 0])
-                    self.pt2_transformed_with_dim_offset = self.pt2_transformed - np.array([dim_offset, 0])
+                    self.text_offset_x = -2
+                    self.dim_line_anchor1 = self.dim_line_anchor1 - np.array([dim_offset, 0])
+                    self.dim_line_anchor2 = self.dim_line_anchor2 - np.array([dim_offset, 0])
                 else:
-                    self.text_offset_x = 9 + dim_offset
-                    self.pt1_transformed_with_dim_offset = self.pt1_transformed + np.array([dim_offset, 0])
-                    self.pt2_transformed_with_dim_offset = self.pt2_transformed + np.array([dim_offset, 0])
+                    self.text_offset_x = 9
+                    self.dim_line_anchor1 = self.dim_line_anchor1 + np.array([dim_offset, 0])
+                    self.dim_line_anchor2 = self.dim_line_anchor2 + np.array([dim_offset, 0])
                 
 
-                self.text_rotation = -90
                 self.text_offset_y = 0
+                self.text_rotation = -90
             case _:
                 raise Exception(f'{DimShape.__name__} cant handle {DataType.__name__} other then {DataType.XDim} oder {DataType.YDim}')
                 
 
 
     def get_svg_string(self, class_str):
-        transform_x = self.center[0] + self.text_offset_x
-        transform_y = self.center[1] + self.text_offset_y
+        dim_line_center = (self.dim_line_anchor1 + self.dim_line_anchor2)/2
+        transform_x = dim_line_center[0] + self.text_offset_x
+        transform_y = dim_line_center[1] + self.text_offset_y
         transform_rot = self.text_rotation
 
         svg_string = ''
-        svg_string += f'<text class="{class_str}-text" transform="translate({transform_x} {transform_y}) rotate({transform_rot})">{self.delta}</text>'
+        svg_string += f'<text class="{class_str}-text" transform="translate({transform_x} {transform_y}) rotate({transform_rot})">{self.dimension_text}</text>'
 
-        if (self.dimOffset != 0):
+        if (self.dim_offset != 0):
             line1_x1, line1_y1 = self.pt1_transformed
-            line1_x2, line1_y2 = self.pt1_transformed_with_dim_offset
+            line1_x2, line1_y2 = self.dim_line_anchor1
             line2_x1, line2_y1 = self.pt2_transformed
-            line2_x2, line2_y2 = self.pt2_transformed_with_dim_offset
-            line3_x1, line3_y1 = self.pt1_transformed_with_dim_offset
-            line3_x2, line3_y2 = self.pt2_transformed_with_dim_offset
+            line2_x2, line2_y2 = self.dim_line_anchor2
+            line3_x1, line3_y1 = self.dim_line_anchor1
+            line3_x2, line3_y2 = self.dim_line_anchor2
 
             svg_string += f'\n<line class="{class_str}-line" x1="{line1_x1}" y1="{line1_y1}" x2="{line1_x2}" y2="{line1_y2}" />'
             svg_string += f'\n<line class="{class_str}-line" x1="{line2_x1}" y1="{line2_y1}" x2="{line2_x2}" y2="{line2_y2}" />'
