@@ -11,8 +11,6 @@ Bsp:
 "Loggia","2-OG1","Room",,"(Bad-1)+(0,25)","(0,0)","(Bad-6)+(0,25)","(Haus-5)+(-9,-25)","(Haus-6)+(25,-25)",,,,,,,,,,,,,
 
 
-#### Wasserzeichen in einfügen
-Am Rand der Zeichnung soll erscheinen, dass der Plan mit diesem Tool inklusive Version und GitHub-URL erzeugt wurde.
 
 #### "Debug"-Elemente ermöglichen
 Es soll möglich sein über eine neue "Debug"-Spalte Einträge ausschließlich im Debug-Modus anzeigen zu lassen.
@@ -33,6 +31,9 @@ Es soll möglich sein, einen Eintrag mehreren Ebenen zuzuweisen. Bspw. ist es f�
 ### Next: v00.001.02
 #### #0006: Erzeugung von svg optional
 Die Erzeugung der svg-Datei ist mehr ein Zwischenschritt als ein Feature. Im manchen Situationen - insb. zur Weiterverarbeitung - kann kann es jedoch tatsächlich Hilfreich sein, die svg-Datei zu erhalten. In allen anderen Fällen sind die svg-Dateien unnötiger Datenmüll. Die Erzeugung der svg-Dateien soll also optional aktiviert werden können.
+
+#### #0007: Wasserzeichen in einfügen
+Am Rand der Zeichnung soll erscheinen, dass der Plan mit diesem Tool inklusive Version und GitHub-URL erzeugt wurde.
 
 ### Release: v00.001.01
 #### #0001: Bemaßungen müssen einheitliche Referenz haben

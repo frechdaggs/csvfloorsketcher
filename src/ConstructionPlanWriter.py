@@ -14,6 +14,7 @@ from Part import Part
 from DataType import DataType
 from PartLabel import PartLabel
 import SVGHelper
+from VersionHelper import get_version, version_to_str
 
 
 class ConstructionPlanWriter:
@@ -105,6 +106,7 @@ class ConstructionPlanWriter:
         header_content += f'<svg width="{svg_width}" height="{svg_height}" xmls="http://www.x3.org/2000/svg">\n'
         header_content += '<style>\n'
         header_content += self.make_style('plan-boarder', 'fill: none', 'stroke: black', 'stroke-width: 2px')
+        header_content += self.make_style('watermark-text', 'font-size: 8pt', 'font-family: monospace')
         header_content += self.make_style('meta-information-key', 'font-size: 10pt', 'font-family: monospace', 'text-anchor: start')
         header_content += self.make_style('meta-information-text', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold', 'text-anchor: middle')
         header_content += self.make_style('label-text', 'fill: black', 'font-size: 10pt', 'font-family: monospace', 'font-weight: bold')
@@ -127,6 +129,13 @@ class ConstructionPlanWriter:
     	
         plan_border_content = ''
         plan_border_content += f'<rect class="plan-boarder" width="{plan_border_width}" height="{plan_border_heigth}" x="{margin}" y="{margin}" />\n'
+        
+        maj, min, patch, rev = get_version()
+        version_str=version_to_str(maj, min, patch, rev)
+
+        watermark_text_1 = f'Created with CSV Floor Sketcher v{version_str}'
+        watermark_text_2 = '(https://github.com/frechdaggs/csvfloorsketcher)'
+        plan_border_content += f'<text class="watermark-text" x="{margin}" y="{margin + plan_border_heigth + 10}">{watermark_text_1}<tspan x="{margin}" dy="10">{watermark_text_2}</tspan></text>\n'
 
         info_box_width = plan_border_width/3
         info_box_height = 50

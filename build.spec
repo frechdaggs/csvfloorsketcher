@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-import re
+from src.VersionHelper import get_version, version_to_str
 
 def make_version_info(major:int, minor:int, patch:int, rev:int):
 	content = ''
@@ -37,17 +37,6 @@ def make_version_info(major:int, minor:int, patch:int, rev:int):
 		
 	with open('build\\version-info.txt', 'w') as f:
 		f.write(content)
-
-def get_version():
-	with open('version.txt') as f:
-		content = f.read()
-		tokens = re.findall(r"(\d+)\.(\d+)\.(\d+)\.(\d+)", content)
-
-		return int(tokens[0][0]), int(tokens[0][1]), int(tokens[0][2]), int(tokens[0][3])
-
-def version_to_str(major:int, minor:int, patch:int, rev:int):
-    return f'{major:02d}.{minor:03d}.{patch:02d}.{rev:02d}'
-
 
 block_cipher = None
 
