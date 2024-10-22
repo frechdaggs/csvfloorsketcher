@@ -1,6 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from src.VersionHelper import get_version, version_to_str
+import os
+import sys
+
+sys.path.insert(0, 'src')
+
+from VersionHelper import get_version, version_to_str
 
 def make_version_info(major:int, minor:int, patch:int, rev:int):
 	content = ''
