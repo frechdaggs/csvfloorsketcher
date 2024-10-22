@@ -1,4 +1,4 @@
-# Construction Plan Creator
+# CSV Floor Sketcher
 ## Installation
 
 1. Erstelle eine virtuelle Umgebung:
@@ -26,11 +26,11 @@
 ## Verwendung
 
     ```bash
-    python ConstructionPlanCreator.py <PATH TO DATA.csv>
+    python CSVFloorSketcher.py <PATH TO DATA.csv>
     ```
 
     ```bash
-    ConstructionPlanCreator_v<VERSION>.exe <PATH TO DATA.csv>
+    CSVFloorSketcher_v<VERSION>.exe <PATH TO DATA.csv>
     ```
 
 ## Release

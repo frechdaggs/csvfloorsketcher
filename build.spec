@@ -52,7 +52,7 @@ def version_to_str(major:int, minor:int, patch:int, rev:int):
 block_cipher = None
 
 a = Analysis(
-    ['src\\ConstructionPlanCreator.py'],
+    ['src\\CSVFloorSketcher.py'],
     pathex=[],
     binaries=[],
     datas=[],
