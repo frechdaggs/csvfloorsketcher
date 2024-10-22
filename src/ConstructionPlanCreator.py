@@ -1,7 +1,7 @@
 import argparse
 import os
 from CSVLoader import CSVLoader
-from ConsolePrinter import print_error
+from ConsolePrinter import print_error, print_info
 from ConstructionPlanSet import ConstructionPlanSet
 from ConstructionPlanWriter import ConstructionPlanWriter
 from Exceptions.InputError import InputError
@@ -13,8 +13,15 @@ def read_data(csv_file):
 
 def parse_data(data):
     data_dict = []
-    for date in data:
+    for i in range(1,len(data)): # Skip first line
+        date = data[i]
         if date:
+            if date[2] == '':
+                print_info(f'Skipping data because the type is not specified - line: {i} - {date}')
+                continue
+
+            print_info(f'Parsing data - line: {i} - {date}')
+
             payload = date[5:len(date)]
             payload = list(filter(lambda n: n!='', payload))
             data_dict.append(
