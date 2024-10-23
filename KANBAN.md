@@ -12,12 +12,13 @@ Die Beschriftung des Plan soll um Höhen-Angaben erweiterbar sein. Eine Höhen-A
 #### Angabe mehrerer Ebenen
 Es soll möglich sein, einen Eintrag mehreren Ebenen zuzuweisen. Bspw. ist es für die "Outline" hilfreich, wenn sie für alle Ebenen gilt.
 
-### Next: v00.001.02
+### Release: v00.002.00
 #### #0006: Erzeugung von svg optional
 Die Erzeugung der svg-Datei ist mehr ein Zwischenschritt als ein Feature. Im manchen Situationen - insb. zur Weiterverarbeitung - kann kann es jedoch tatsächlich Hilfreich sein, die svg-Datei zu erhalten. In allen anderen Fällen sind die svg-Dateien unnötiger Datenmüll. Die Erzeugung der svg-Dateien soll also optional aktiviert werden können.
 
 #### #0007: Wasserzeichen in einfügen
 Am Rand der Zeichnung soll erscheinen, dass der Plan mit diesem Tool inklusive Version und GitHub-URL erzeugt wurde.
+* Es soll beim Übersetzen des Bauplans möglich sein eine "Debug"-Option zu aktivieren.
 
 #### #0008: Fehler: Im Debug-Mode stimmt die Index-Beschriftung der Punkte nicht.
 Die Index-Beschriftung soll entsprechend der Referenzierungslogik geschehen. Also mit 1 anstelle von 0 beginnen.
