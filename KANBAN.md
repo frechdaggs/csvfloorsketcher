@@ -1,14 +1,7 @@
 ### Backlog
-#### Unterscheidung zwischen berechneten und gewussten Maßen
-Es muss möglich sein, bei Bemaßungen angeben zu können, ob ein Maß berechnet bzw. sich ergeben hat oder ob eine Bemaßung wissentlich eingetragen wurde.
-
-
-
-
 
 #### "Debug"-Elemente ermöglichen
 Es soll möglich sein über eine neue "Debug"-Spalte Einträge ausschließlich im Debug-Modus anzeigen zu lassen.
-
 
 #### Dachschrägen
 Es soll möglich sein, einen Dachschrägen im Plan einzeichnen zu können.
@@ -18,7 +11,6 @@ Die Beschriftung des Plan soll um Höhen-Angaben erweiterbar sein. Eine Höhen-A
 
 #### Angabe mehrerer Ebenen
 Es soll möglich sein, einen Eintrag mehreren Ebenen zuzuweisen. Bspw. ist es für die "Outline" hilfreich, wenn sie für alle Ebenen gilt.
-
 
 ### Next: v00.001.02
 #### #0006: Erzeugung von svg optional
@@ -39,6 +31,9 @@ Bsp:
 
 **Update**
 Das Problem scheint zu sein, dass die Punkte in der Payload im Bezugsystem relativ zur Referenz angegeben werden. Wird jedoch ein Punkt über eine ID abgefragt, wird ein Punkt im absoluten Bezugsystem zurückgegeben. Der Fehler hängt also vielmehr mit einer Vermischung der Bezugssysteme als mit einem Fehler in der Berechnung zusammen.
+
+#### #0010: Unterscheidung zwischen berechneten und gewussten Maßen
+Es muss möglich sein, bei Bemaßungen angeben zu können, ob ein Maß berechnet bzw. sich ergeben hat oder ob eine Bemaßung wissentlich eingetragen wurde.
 
 ### Release: v00.001.01
 #### #0001: Bemaßungen müssen einheitliche Referenz haben

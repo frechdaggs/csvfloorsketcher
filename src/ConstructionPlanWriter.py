@@ -213,7 +213,7 @@ class ConstructionPlanWriter:
                 return 'room-connection'
             case DataType.OpeningArc:
                 return 'opening-arc'
-            case DataType.XDim|DataType.YDim:
+            case DataType.XDim|DataType.YDim|DataType.XDimC|DataType.YDimC:
                 return 'dim'
             case DataType.Label:
                 return 'label-text'
@@ -274,7 +274,7 @@ class ConstructionPlanWriter:
                     shape = OpeningArgShape(self.scale_divisor, part.points, part.reference)
                     shapes.append(shape.get_svg_string(self.get_style_class(part.dataType)))
                     
-                case DataType.XDim | DataType.YDim:
+                case DataType.XDim | DataType.YDim | DataType.XDimC | DataType.YDimC:
                     pt1 = part.points[0]
                     pt2 = part.points[1]
 
@@ -392,8 +392,8 @@ class DimShape(Shape):
     def __init__(self, scale_divisor, dimType:DataType, pt1, pt2, dim_offset:float, reference = None):
         super().__init__(scale_divisor)
         
-        if (not (dimType == DataType.XDim or dimType == DataType.YDim)):
-            raise Exception(f'{DimShape.__name__} cant handle {DataType.__name__} other then {DataType.XDim} oder {DataType.YDim}')
+        if (not (dimType == DataType.XDim or dimType == DataType.YDim or dimType == DataType.XDimC or dimType == DataType.YDimC)):
+            raise Exception(f'{DimShape.__name__} cant handle {DataType.__name__} other then {DataType.XDim}, {DataType.YDim}, {DataType.XDim} or {DataType.YDim}')
 
         self.dim_offset = dim_offset
         self.pt1_transformed = self.cm_to_dots(self.invert_y(pt1))/self.scale_divisor
@@ -405,9 +405,12 @@ class DimShape(Shape):
         reference_transformed = self.cm_to_dots(self.invert_y(reference))/self.scale_divisor
         
         match dimType:
-            case DataType.XDim:
+            case DataType.XDim|DataType.XDimC:
                 self.dimension_text = abs(pt2[0]-pt1[0])
                                     
+                if (dimType is DataType.XDimC):
+                    self.dimension_text = f'({self.dimension_text})'
+
                 self.dim_line_anchor1 = np.array([self.pt1_transformed[0], reference_transformed[1]])
                 self.dim_line_anchor2 = np.array([self.pt2_transformed[0], reference_transformed[1]])
                 
@@ -423,8 +426,11 @@ class DimShape(Shape):
                 self.text_offset_x = 0
                 self.text_rotation = 0
 
-            case DataType.YDim:
+            case DataType.YDim|DataType.YDimC:
                 self.dimension_text = abs(pt2[1]-pt1[1])
+                
+                if (dimType is DataType.YDimC):
+                    self.dimension_text = f'({self.dimension_text})'
                     
                 self.dim_line_anchor1 = np.array([reference_transformed[0], self.pt1_transformed[1]])
                 self.dim_line_anchor2 = np.array([reference_transformed[0], self.pt2_transformed[1]])
