@@ -15,8 +15,6 @@ Bsp:
 #### "Debug"-Elemente ermöglichen
 Es soll möglich sein über eine neue "Debug"-Spalte Einträge ausschließlich im Debug-Modus anzeigen zu lassen.
 
-#### Fehler: Im Debug-Mode stimmt die Index-Beschriftung der Punkte nicht.
-Die Index-Beschriftung soll entsprechend der Referenzierungslogik geschehen. Also mit 1 anstelle von 0 beginnen.
 
 #### Dachschrägen
 Es soll möglich sein, einen Dachschrägen im Plan einzeichnen zu können.
@@ -34,6 +32,9 @@ Die Erzeugung der svg-Datei ist mehr ein Zwischenschritt als ein Feature. Im man
 
 #### #0007: Wasserzeichen in einfügen
 Am Rand der Zeichnung soll erscheinen, dass der Plan mit diesem Tool inklusive Version und GitHub-URL erzeugt wurde.
+
+#### #0008: Fehler: Im Debug-Mode stimmt die Index-Beschriftung der Punkte nicht.
+Die Index-Beschriftung soll entsprechend der Referenzierungslogik geschehen. Also mit 1 anstelle von 0 beginnen.
 
 ### Release: v00.001.01
 #### #0001: Bemaßungen müssen einheitliche Referenz haben

@@ -378,7 +378,7 @@ class DebugReferenceInformationShape(Shape):
 
         for i in range(0,len(self.points_transformed)):
             point = self.points_transformed[i]
-            self._svg_content += f'<text class="{class_str}-text" text-anchor="middle" x="{point[0]}" y="{point[1]+5}">{i}</text>\n'
+            self._svg_content += f'<text class="{class_str}-text" text-anchor="middle" x="{point[0]}" y="{point[1]+5}">{i+1}</text>\n'
 
         self._svg_content += f'<text class="{class_str}-text" text-anchor="end" x="{self.ref_id_text_pos[0]}" y="{self.ref_id_text_pos[1]}">{self.part.identifier}</text>'
 
