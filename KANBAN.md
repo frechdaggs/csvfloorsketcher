@@ -37,6 +37,9 @@ Bsp:
 "Bad","2-OG1","Room",,"(442,845)","(0,0)","(0,-256)","(60,-256)","(60,-296)","(280,-296)","(280,0)",,,,,,,,,,,
 "Loggia","2-OG1","Room",,"(Bad-1)+(0,25)","(0,0)","(Bad-6)+(0,25)","(Haus-5)+(-9,-25)","(Haus-6)+(25,-25)",,,,,,,,,,,,,
 
+**Update**
+Das Problem scheint zu sein, dass die Punkte in der Payload im Bezugsystem relativ zur Referenz angegeben werden. Wird jedoch ein Punkt über eine ID abgefragt, wird ein Punkt im absoluten Bezugsystem zurückgegeben. Der Fehler hängt also vielmehr mit einer Vermischung der Bezugssysteme als mit einem Fehler in der Berechnung zusammen.
+
 ### Release: v00.001.01
 #### #0001: Bemaßungen müssen einheitliche Referenz haben
 Für Bemaßungen die nicht die gleichen x- bzw. y-Werte haben liegt die Bemaßungszahl auf der Diagonale. Darüberhinaus können Bemaßungen mit Offset nicht an einander ausgerichtet werden. Hierfür ist wäre Referenzpunkt notwendig. Ist dieser nicht vorgegeben muss einer der beiden Beaßungspunkte als Referenzpunktherangezogen werden.
