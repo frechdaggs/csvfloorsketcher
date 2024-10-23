@@ -47,9 +47,11 @@ block_cipher = None
 
 a = Analysis(
     ['src\\CSVFloorSketcher.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
-    datas=[],
+    datas=[
+        ('version.txt', '.'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -68,7 +70,6 @@ version_str=version_to_str(maj, min, patch, rev)
 
 exe = EXE(
     pyz,
-    a.scripts,
     a.scripts,
     a.binaries,
     a.datas,
