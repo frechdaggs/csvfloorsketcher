@@ -66,18 +66,25 @@ class ConstructionPlanSet:
         if reference_expression != '':
             reference = self.parse_and_calculate_point(reference_expression, layer)
 
-        if (dataType == DataType.MetaInformation):
-            self.meta_information[identifier] = payload[0]
-        elif (dataType == DataType.Settings):
-            self.settings[identifier] = payload[0]
-        elif (dataType == DataType.Label):
-            self.check_payload_length(payload, 1)
-            text1 = payload[0]
-            text2 = '' if len(payload) <= 1 else payload[1]
-            self.part_list.append(PartLabel(identifier, dataType, layer, reference, text1, text2))
-        else:
-            points = list(map(lambda n: self.parse_and_calculate_point(n, layer, reference),payload))
-            self.part_list.append(Part(identifier, dataType, layer, dimOffset, reference, points))
+        match dataType:
+            case DataType.MetaInformation:
+                self.meta_information[identifier] = payload[0]
+            case DataType.Settings:
+                self.settings[identifier] = payload[0]
+            case DataType.Label:
+                self.check_payload_length(payload, 1)
+                text1 = payload[0]
+                text2 = '' if len(payload) <= 1 else payload[1]
+                self.part_list.append(PartLabel(identifier, dataType, layer, reference, text1, text2))
+            case _:
+                payload_contains_relative_points:bool = dataType not in (DataType.XDim, DataType.XDimC, DataType.YDim, DataType.YDimC)
+                
+                calculation_reference = None
+                if payload_contains_relative_points:
+                    calculation_reference = reference
+                
+                points = list(map(lambda n: self.parse_and_calculate_point(n, layer, calculation_reference),payload))
+                self.part_list.append(Part(identifier, dataType, layer, dimOffset, reference, points))
 
     def check_payload_length(self, payload, min_length):
         if len(payload) < min_length:
