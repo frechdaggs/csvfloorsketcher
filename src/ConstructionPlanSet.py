@@ -9,32 +9,43 @@ from DataType import DataType
 from PartLabel import PartLabel
 
 class ConstructionPlanSet:
-
     def __init__(self):
         self.part_list:List[Part] = list()
         self.meta_information:dict[str, str] = {'Date': date.today().strftime("%d.%m.%Y")}
         self.settings:dict[str, str] = {'PageSize': 'A4'}
+    
+    def parse_and_calculate_point(self, expression:str, layer, reference:np.ndarray = None):
+        points = expression.split('+')
+        
+        parsed_points = []
+        
+        for point in points:
+            tokens = re.findall(r"\((.*?)\)", point)
+            
+            if (len(tokens) != 1):
+                raise ImportError(f'Unable to intepret point: {point}')
+            
+            point = tokens[0]
+            
+            if (',' in point):
+                x_str, y_str = point.split(',')
+                x, y = int(x_str), int(y_str)
+            else:
+                x, y = self.get_coordinates_of_point(point, layer)
 
-
-    def parse_and_calculate_point(self, expression:str, layer):
-        tokens = re.findall(r"\((.*?)\)", expression)
+                if (reference is not None):
+                    x -= reference[0]
+                    y -= reference[1]
+            
+            parsed_points.append(tuple([x, y]))
 
         result_x = 0
         result_y = 0
-
-        for token in tokens:
-            if (',' in token):
-                x_str, y_str = token.split(',')
-                x, y = int(x_str), int(y_str)
-            else:
-                x, y = self.get_coordinates_of_point(token, layer)
-
-            result_x += x
-            result_y += y
-
-
+        for parsed_point in parsed_points:
+            result_x += parsed_point[0]
+            result_y += parsed_point[1]
+            
         return np.array([result_x, result_y])
-    
 
     def add_data(self, date):
         print_info(f'Adding data: {date}')
@@ -65,7 +76,7 @@ class ConstructionPlanSet:
             text2 = '' if len(payload) <= 1 else payload[1]
             self.part_list.append(PartLabel(identifier, dataType, layer, reference, text1, text2))
         else:
-            points = list(map(lambda n: self.parse_and_calculate_point(n, layer),payload))
+            points = list(map(lambda n: self.parse_and_calculate_point(n, layer, reference),payload))
             self.part_list.append(Part(identifier, dataType, layer, dimOffset, reference, points))
 
     def check_payload_length(self, payload, min_length):
@@ -88,14 +99,16 @@ class ConstructionPlanSet:
         identifier = tokens[0][0]
         idx = int(tokens[0][1])-1
 
-        part:Part = self.get_part(identifier, layer)
+        referenced_part:Part = self.get_part(identifier, layer)
 
         if (idx < 0):
             raise InputError(f"Error parsing {expression}: Referencing index must be greater then 0")
         
-        point = part.points[idx]
+        referenced_point = referenced_part.points[idx]
 
-        return point[0]+part.reference[0], point[1]+part.reference[1]
+        x, y = referenced_point[0]+referenced_part.reference[0], referenced_point[1]+referenced_part.reference[1]
+
+        return x, y
 
     def get_parts_in_layer(self, layer) -> List[Part]:
         return list(filter(lambda n: n.layer == layer, self.part_list))
