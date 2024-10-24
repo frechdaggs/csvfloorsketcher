@@ -3,6 +3,17 @@
 #### "Debug"-Elemente ermöglichen
 Es soll möglich sein über eine neue "Debug"-Spalte Einträge ausschließlich im Debug-Modus anzeigen zu lassen.
 
+#### Möglichkeit Elemente zu verbergen
+Es soll möglich sein über eine neue "Hide"-Spalte Einträge temporär zu verbergen.
+
+#### Teilweise leere Zeilen ignorieren
+Eine Zeile soll igonriert werden, wenn kein Typ angegeben ist.
+
+#### Rückmeldung über das ignorieren von Zeilen überarbeiten
+* Ist die Zeile befüllt, jedoch kein Typ angegeben, soll eine Warnung ausgegeben werden.
+* Ist die Zeile leer, soll keine Warnung ausgegeben werden.
+* Am Ende des Berechnungsprozesses soll ein "Summary" erzeugt werden.
+
 #### Dachschrägen
 Es soll möglich sein, einen Dachschrägen im Plan einzeichnen zu können.
 
