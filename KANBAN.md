@@ -23,6 +23,9 @@ Die Beschriftung des Plan soll um Höhen-Angaben erweiterbar sein. Eine Höhen-A
 #### Angabe mehrerer Ebenen
 Es soll möglich sein, einen Eintrag mehreren Ebenen zuzuweisen. Bspw. ist es für die "Outline" hilfreich, wenn sie für alle Ebenen gilt.
 
+#### Versionierbarer DataLayer
+Um abwärtskompatibilitäten der Daten und gleichzeitige skalierbarkeit des Programms gewährleisten zu können muss die Datenstruktur versionierbar, updatebar und architektornisch von der Business-Ebene entkoppelt sein.
+
 ### Release: v00.002.00
 #### #0006: Erzeugung von svg optional
 Die Erzeugung der svg-Datei ist mehr ein Zwischenschritt als ein Feature. Im manchen Situationen - insb. zur Weiterverarbeitung - kann kann es jedoch tatsächlich Hilfreich sein, die svg-Datei zu erhalten. In allen anderen Fällen sind die svg-Dateien unnötiger Datenmüll. Die Erzeugung der svg-Dateien soll also optional aktiviert werden können.

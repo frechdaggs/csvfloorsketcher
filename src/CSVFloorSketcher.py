@@ -4,6 +4,7 @@ from CSVLoader import CSVLoader
 from ConsolePrinter import print_error, print_info
 from ConstructionPlanSet import ConstructionPlanSet
 from ConstructionPlanWriter import ConstructionPlanWriter
+from dataAccess.DataSet import create_data_set
 from exceptions.InputError import InputError
 
 
@@ -50,6 +51,8 @@ def main():
     file_path_without_ext, ext = os.path.splitext(csv_file)
 
     data = read_data(csv_file)
+
+    data_set = create_data_set(data)
 
     data_dict = parse_data(data)
 
