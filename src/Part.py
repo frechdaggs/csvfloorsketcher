@@ -1,6 +1,6 @@
 from numpy import ndarray
 from DataType import DataType
-from Exceptions.InputError import InputError
+from exceptions.InputError import InputError
 
 
 class Part:

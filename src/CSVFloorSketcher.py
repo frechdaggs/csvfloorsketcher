@@ -4,7 +4,7 @@ from CSVLoader import CSVLoader
 from ConsolePrinter import print_error, print_info
 from ConstructionPlanSet import ConstructionPlanSet
 from ConstructionPlanWriter import ConstructionPlanWriter
-from Exceptions.InputError import InputError
+from exceptions.InputError import InputError
 
 
 def read_data(csv_file):

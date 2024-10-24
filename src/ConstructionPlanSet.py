@@ -3,7 +3,7 @@ import re
 from typing import List, cast
 import numpy as np
 from ConsolePrinter import print_info
-from Exceptions.InputError import InputError
+from exceptions.InputError import InputError
 from Part import Part
 from DataType import DataType
 from PartLabel import PartLabel

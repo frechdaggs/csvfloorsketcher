@@ -8,8 +8,8 @@ from svglib.svglib import svg2rlg
 from typing import Dict, List, cast
 import numpy as np
 from ConstructionPlanSet import ConstructionPlanSet
-from Exceptions.InputError import InputError
-from Exceptions.NotImplementedException import NotImplementedException
+from exceptions.InputError import InputError
+from exceptions.NotImplementedException import NotImplementedException
 from Part import Part
 from DataType import DataType
 from PartLabel import PartLabel
